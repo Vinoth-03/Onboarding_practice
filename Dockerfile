@@ -1,20 +1,12 @@
-FROM python:3.10.5-slim-buster
+FROM python:3
 
-EXPOSE 8000 8080
+WORKDIR /usr/src/app
 
-RUN apt-get -y update && apt-get -y upgrade
-RUN apt-get -y install supervisor
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY requirements.txt /mnt/src/requirements.txt
+COPY . .
 
-RUN  pip install -r /mnt/src/requirements.txt
+#CMD [ "python", "demo.py" ]
 
-COPY . /mnt/src/
-
-WORKDIR /mnt/src/
-
-RUN pip install -e .
-
-# Initializing from supervisord
-CMD ["supervisord","-c","/mnt/src/config/service_script.conf"]
-#CMD [streamlit run src/app.py ]
+CMD ["streamlit", "run", "app.py", "--server.port=8080", "--server.address=0.0.0.0"]
